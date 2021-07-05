@@ -23,11 +23,19 @@ namespace TestWorkForMonqlab.Domain.Services
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Метод, который возвращает список email'ов из БД
+        /// </summary>
+        /// <returns>Список email'ов</returns>
         public IEnumerable<Mail> Get()
         {
             return _context.Mails.ToArray();
         }
 
+        /// <summary>
+        /// Метод, который пытается отправить письмо с информацией из <paramref name="message"/> и добавляет в его в БД 
+        /// </summary>
+        /// <param name="message"></param>
         public void Send(SendMessageDto message)
         {
             bool correct = false;

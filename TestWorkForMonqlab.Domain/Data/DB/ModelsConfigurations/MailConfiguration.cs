@@ -8,6 +8,10 @@ namespace TestWorkForMonqlab.Domain.Data.DB.ModelsConfigurations
 {
     public class MailConfiguration : IEntityTypeConfiguration<Mail>
     {
+        /// <summary>
+        /// Метод нужен для конфигурации модели <c>Mail</c> EF Core
+        /// </summary>
+        /// <param name="builder"></param>
         public void Configure(EntityTypeBuilder<Mail> builder)
         {
             builder
