@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Mail;
 using TestWorkForMonqlab.Domain.Data.DB;
 using TestWorkForMonqlab.Domain.Data.Models;
 using TestWorkForMonqlab.Domain.DTOs;
+using TestWorkForMonqlab.Domain.Extensions;
 using TestWorkForMonqlab.Domain.Services.Interfaces;
 
 namespace TestWorkForMonqlab.Domain.Services
@@ -10,10 +14,12 @@ namespace TestWorkForMonqlab.Domain.Services
     public class MailService : IMailService
     {
         private readonly MonqlabDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public MailService(MonqlabDbContext context)
+        public MailService(MonqlabDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public void Send(SendMessageDto message)
@@ -41,7 +47,57 @@ namespace TestWorkForMonqlab.Domain.Services
                 correct = mail.Recipients.Count() > 0;
             }
 
+            if (correct)
+            {
+                try
+                {
+                    var smtpConfiguration = _configuration.GetSmtpConfiguration();
+                    var mailMessage = GetMailMessage(mail, smtpConfiguration);
+                    var smtpClient = new SmtpClient()
+                    {
+                        Host = smtpConfiguration.Host,
+                        Port = smtpConfiguration.Port,
+                        Credentials = smtpConfiguration.Credential,
+                        EnableSsl = smtpConfiguration.EnableSsl
+                    };
 
+
+                    smtpClient.Send(mailMessage);
+                }
+                catch (Exception ex)
+                {
+                    correct = false;
+
+                    mail.FailedMessage = ex.Message;
+                }
+            }
+            else
+            {
+                mail.FailedMessage = "Нет корректных реципиентов";
+            }
+
+            mail.Result = correct ? MailResult.Ok : MailResult.Failed;
+
+            _context.Mails.Add(mail);
+
+            _context.SaveChanges();
+        }
+
+        private MailMessage GetMailMessage(Mail mail, SmtpConfiguration smtpConfiguration)
+        {
+            MailMessage m = new MailMessage
+            {
+                From = new MailAddress(smtpConfiguration.Host, smtpConfiguration.DisplayName),
+                Subject = mail.Subject,
+                Body = mail.Body
+            };
+
+            foreach (var r in mail.Recipients)
+            {
+                m.To.Add(r);
+            }
+
+            return m;
         }
     }
 }

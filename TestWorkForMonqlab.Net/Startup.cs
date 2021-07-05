@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TestWorkForMonqlab.Domain.Data.DB;
+using TestWorkForMonqlab.Domain.Services;
+using TestWorkForMonqlab.Domain.Services.Interfaces;
 
 namespace TestWorkForMonqlab.Net
 {
@@ -24,7 +26,7 @@ namespace TestWorkForMonqlab.Net
             services.AddDbContext<MonqlabDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             //Common
-            services.AddTransient
+            services.AddTransient<IMailService, MailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

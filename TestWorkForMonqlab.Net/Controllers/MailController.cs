@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestWorkForMonqlab.Domain.DTOs;
-using TestWorkForMonqlab.Domain.Services;
+using TestWorkForMonqlab.Domain.Services.Interfaces;
 
 namespace TestWorkForMonqlab.Net.Controllers
 {
     [Route("api/mails")]
     public class MailController : Controller
     {
-        private readonly MailService _service;
+        private readonly IMailService _service;
 
-        public MailController(MailService service)
+        public MailController(IMailService service)
         {
             _service = service;
         }
