@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Mail;
@@ -20,6 +21,11 @@ namespace TestWorkForMonqlab.Domain.Services
         {
             _context = context;
             _configuration = configuration;
+        }
+
+        public IEnumerable<Mail> Get()
+        {
+            return _context.Mails.ToArray();
         }
 
         public void Send(SendMessageDto message)

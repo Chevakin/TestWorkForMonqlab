@@ -20,5 +20,12 @@ namespace TestWorkForMonqlab.Net.Controllers
         {
             _service.Send(message);
         }
+
+        [Route("")]
+        [HttpGet]
+        public JsonResult Get()
+        {
+            return Json(_service.Get());
+        }
     }
 }
